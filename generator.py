@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 
+# TODO: add labels to points, correct quadrant labels, make the dots bigger and different colors
+
 def get_hours_spent():
     life_units = {
         "Significant other": "Time spent with partner, dates, quality time",
@@ -16,7 +18,7 @@ def get_hours_spent():
         "Hobbies/Interests": "Pursuing personal hobbies, recreational activities",
         "Online Entertainment": "Time spent on social media, gaming, watching videos",
         "Offline Entertainment": "Vacations, theater, live events",
-        "Physiological Needs": "Eating, sleeping, intimacy, self-care routines",
+        "Physiological Needs": "Eating, sleeping, intimacy",
         "Daily Routine": "Hygiene, household chores, commuting"
     }
 
@@ -29,10 +31,10 @@ def get_hours_spent():
     hours_spent = {}
     importance_rank = {}
     satisfaction_rank = {}
+    
     for unit, description in life_units.items():
         print(f"\n{unit}:")
         
-        # Validating hours spent
         while True:
             try:
                 hours = float(input(f"How many hours do you spend on {unit} in a typical week? ({description}): "))
@@ -44,7 +46,6 @@ def get_hours_spent():
             except ValueError:
                 print("Invalid input. Please enter a valid numeric value.")
 
-        # Validating importance ranking
         while True:
             try:
                 importance = int(input(f"On a scale of 1 to 10, how important is {unit} to you?: "))
@@ -56,7 +57,6 @@ def get_hours_spent():
             except ValueError:
                 print("Invalid input. Please enter a valid numeric value.")
 
-        # Validating satisfaction ranking
         while True:
             try:
                 satisfaction = int(input(f"On a scale of 1 to 10, how satisfied are you with your current situation regarding {unit}?: "))
@@ -70,14 +70,10 @@ def get_hours_spent():
 
     return hours_spent, importance_rank, satisfaction_rank
 
-def calculate_total(hours_spent):
-    total_hours = sum(hours_spent.values())
-    return total_hours
-
 def main():
     hours_spent, importance_rank, satisfaction_rank = get_hours_spent()
-    total_hours = calculate_total(hours_spent)
-    
+    total_hours = sum(hours_spent.values())
+
     print("\nYour hours distribution in a typical week:")
     for unit, hours in hours_spent.items():
         print(f"- {unit}: {hours} hours")
@@ -93,17 +89,30 @@ def main():
     print(f"\nTotal hours entered in a typical week: {total_hours} hours")
     print("Remember, there are 168 hours in a week.")
 
-    # Creating a bubble chart
+    max_size = max(hours_spent.values())
+    normalized_sizes = [size / max_size * 1000 for size in hours_spent.values()]
+
     x = list(importance_rank.values())
     y = list(satisfaction_rank.values())
-    sizes = list(hours_spent.values())
 
     plt.figure(figsize=(10, 6))
-    plt.scatter(x, y, s=sizes, alpha=0.5)
+    plt.scatter(x, y, s=normalized_sizes, alpha=0.5)
     plt.title('Importance vs. Satisfaction vs. Hours Spent')
     plt.xlabel('Importance Rating')
     plt.ylabel('Satisfaction Rating')
     plt.grid(True)
+
+    plt.axhline(y=5, color='r', linestyle='--')
+    plt.axvline(x=5, color='r', linestyle='--')
+
+    plt.text(2, 8, 'High Importance, High Satisfaction')
+    plt.text(2, 2, 'High Importance, Low Satisfaction')
+    plt.text(8, 8, 'Low Importance, High Satisfaction')
+    plt.text(8, 2, 'Low Importance, Low Satisfaction')
+
+    plt.xlim(0, 10)
+    plt.ylim(0, 10)
+
     plt.show()
 
 if __name__ == "__main__":
